@@ -50,6 +50,13 @@ RUN mkdir -p /usr/src/php/ext/redis \
 
 RUN apt-get install -y supervisor
 
+
+RUN docker-php-ext-install zip
+
+RUN curl -s http://getcomposer.org/installer | php && \
+    echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
+    mv composer.phar /usr/local/bin/composer
+
 RUN usermod -u 1000 www-data
 RUN groupmod -g 1000 www-data
 WORKDIR /var/www
