@@ -32,7 +32,7 @@ services:
       - phpfpm
 
   db:
-    image: mysql:latest
+    image: mysql:5.7
     environment:
       - MYSQL_ROOT_PASSWORD=${DOCKER_DB_ROOT_PASSWORD}
       - MYSQL_DATABASE=${DATABASE_NAME}
