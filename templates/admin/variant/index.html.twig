@@ -1,0 +1,35 @@
+{% extends 'admin/product/show.html.twig' %}
+
+
+{% block variants %}
+
+<h3>Variants</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Color</th>
+        <th>Price</th>
+        <th>actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for variant in variants %}
+        <tr>
+            <td>{{ variant.id }}</td>
+            <td>{{ variant.color }}</td>
+            <td>{{ variant.price }}</td>
+            <td>
+                <a href="{{ path('admin_variant_edit', {'productId': product.id, 'id': variant.id}) }}">edit</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="6">no records found</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ path('admin_variant_new', {productId: product.id}) }}">Create new</a>
+{% endblock %}

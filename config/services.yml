@@ -1,0 +1,149 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $queryBus: '@tactician.commandbus.query'
+            $commandBus: '@tactician.commandbus.command'
+            $siteUrl: 'http://test.digikala.local'
+            $productIndexProductType: '@digikala.index.product.type.product'
+            $productIndexProductTypeMapping: '@digikala.index.product.type.product.mapping'
+
+    Digikala\:
+        resource: '../src/*'
+        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+
+    Digikala\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    Digikala\Worker\:
+        resource: '../src/Worker'
+        tags: ['enqueue.client.processor']
+        public: true
+
+    Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface:
+        class: Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage
+
+    Symfony\Component\HttpFoundation\Session\SessionInterface:
+        class: Symfony\Component\HttpFoundation\Session\Session
+
+    Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface:
+        class: Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage
+
+    security.token_storage:
+        alias: Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface
+
+    Symfony\Component\Security\Core\User\UserChecker: ~
+
+    Symfony\Component\Security\Core\User\InMemoryUserProvider:
+        arguments: ['%in_memory_users%']
+
+    Symfony\Component\Security\Core\Encoder\EncoderFactory:
+        arguments: ['%user_encoders%']
+
+    Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface:
+        class: Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy
+        arguments:
+            - 'migrate'
+
+    Symfony\Component\Security\Http\HttpUtils: ~
+
+    Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolverInterface:
+        class: Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolver
+        arguments:
+            - Symfony\Component\Security\Core\Authentication\Token\AnonymousToken
+            - Symfony\Component\Security\Core\Authentication\Token\RememberMeToken
+
+    Symfony\Component\Security\Core\Role\RoleHierarchyInterface:
+        class: Symfony\Component\Security\Core\Role\RoleHierarchy
+        arguments: ['%role_hierarchy%']
+    Symfony\Component\Security\Core\Authorization\Voter\RoleHierarchyVoter: ~
+    Symfony\Component\Security\Core\Authorization\Voter\RoleVoter: ~
+    Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter:
+        arguments:
+            - '@Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolverInterface'
+
+    Symfony\Component\Security\Core\Authorization\AccessDecisionManager:
+        arguments:
+            - ['@Symfony\Component\Security\Core\Authorization\Voter\RoleHierarchyVoter', '@Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter']
+
+    security.authentication_utils:
+        class: Symfony\Component\Security\Http\Authentication\AuthenticationUtils
+        public: true
+        arguments: ['@request_stack']
+
+    Symfony\Component\Security\Http\Authentication\AuthenticationUtils:
+        alias: 'security.authentication_utils'
+
+    Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface:
+        class: Symfony\Component\Security\Core\Authorization\TraceableAccessDecisionManager
+        arguments: ['@Symfony\Component\Security\Core\Authorization\AccessDecisionManager']
+
+    Symfony\Component\Security\Http\FirewallMap:
+        factory: ['@Digikala\Security\FirewallMapFactory', 'create']
+
+    Symfony\Component\Security\Http\Firewall:
+        arguments:
+            - '@Symfony\Component\Security\Http\FirewallMap'
+            - '@event_dispatcher'
+
+    request_stack:
+        class: Symfony\Component\HttpFoundation\RequestStack
+        public: true
+
+    Symfony\Component\HttpFoundation\RequestStack:
+        alias: '@request_stack'
+
+    Doctrine\ORM\Configuration:
+        factory: 'Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration'
+        arguments:
+            - ['%kernel.project_dir%/src/Entity']
+            - true
+            - null
+            - null
+            - false
+    Doctrine\ORM\EntityManagerInterface:
+        class: Doctrine\ORM\EntityManager
+        factory: 'Doctrine\ORM\EntityManager::create'
+        arguments:
+            - '%db_conn%'
+            - '@Doctrine\ORM\Configuration'
+        public: true
+
+    Swift_SmtpTransport:
+        class: Swift_SmtpTransport
+        calls:
+            - {method: 'setHost', arguments: ['%smtp_host%']}
+            - {method: 'setPort', arguments: ['%smtp_port%']}
+    Swift_Mailer:
+        class: Swift_Mailer
+        arguments: ['@Swift_SmtpTransport']
+
+    Elastica\Client:
+        arguments:
+            - {host: '%elasticsearch_host%', port: '%elasticsearch_port%'}
+
+    digikala.index.product:
+        class: Elastica\Index
+        factory: ['@Elastica\Client', 'getIndex']
+        arguments: ['%elastic_index_product_name%']
+
+    digikala.index.product.type.product:
+        class: Elastica\Type
+        factory: ['@digikala.index.product', 'getType']
+        arguments: ['product']
+
+    digikala.index.product.type.product.mapping:
+        class: Elastica\Type\Mapping
+        calls:
+            - { method: 'setType', arguments: ['@digikala.index.product.type.product']}
+            - { method: 'setProperties', arguments: ['%elastic_index_product_type_product_properties%']}
+
+    Memcached:
+        class: Memcached
+        calls:
+            - { method: addServer, arguments: ['%memcached_host%', '%memcached_port%']}
+    Symfony\Component\Cache\Simple\MemcachedCache:
+        arguments: ['@Memcached']

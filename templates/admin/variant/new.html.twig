@@ -1,0 +1,7 @@
+{% extends 'admin/product/show.html.twig' %}
+
+{% block variants %}
+    {{ include('admin/variant/_form.html.twig') }}
+
+    <a href="{{ path('admin_variant_index', {'productId': product.id}) }}">back to list</a>
+{% endblock %}

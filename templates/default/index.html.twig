@@ -1,0 +1,77 @@
+{% extends 'layout/layout.html.twig' %}
+
+{% block page_title %}Products Search{% endblock %}
+
+{% block sidebar %}
+    <h2 class="my-4">Search</h2>
+    <div class="list-group">
+        <form action="">
+            <div class="form-group">
+                <input type="text" class="form-control" name="search" value="{{ app.request.query.get('search', null) }}" placeholder="Search in title and description">
+            </div>
+            <div class="form-group">
+                <label for="pricefrom">Price</label>
+                <div class="input-group">
+                    <input type="number" id="pricefrom" class="form-control" name="pricefrom" value="{{ app.request.query.get('pricefrom', null) }}" placeholder="Price From">
+                    <input type="number" class="form-control" name="priceto" value="{{ app.request.query.get('priceto', null) }}" placeholder="Price To">
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label for="color">Color</label>
+                <input type="text" id="color" class="form-control" name="color" value="{{ app.request.query.get('color', null) }}" placeholder="Color">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        {% for product in products %}
+            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a href="#">{{ product.title }}</a>
+                    </h4>
+                    {% set prices = [] %}
+                    {% for variant in product.variants %}
+                        {% set prices = prices|merge([variant.price])  %}
+                    {% endfor %}
+                    {% if prices|length > 0 %}
+                        <h5>${{ min(prices) }}</h5>
+                    {% else %}
+                        <h5>Call for price</h5>
+                    {% endif %}
+                    <p class="card-text">{{ product.description }}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="col-lg-12 col-md-12 mb-12">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% set next_page = app.request.query.get('page', 1) + 1 %}
+                    {% set prev_page = app.request.query.get('page', 1) - 1 %}
+                    {% set max_page = (products.totalHits/constant('Digikala\\Elastic\\ElasticProductRepository::PAGE_SIZE'))|round(0, 'ceil') %}
+
+                    {% if prev_page > 0 %}
+                    <li class="page-item"><a class="page-link" href="{{ path('home', app.request.query.all|merge({page: prev_page}) ) }}">Previous</a></li>
+                    {% endif %}
+
+                    {% if next_page <= max_page %}
+                    <li class="page-item"><a class="page-link" href="{{ path('home', app.request.query.all|merge({page: next_page}) ) }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+
+    </div>
+    <!-- /.row -->
+{% endblock %}

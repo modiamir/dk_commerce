@@ -1,0 +1,35 @@
+{% extends 'layout/admin_layout.html.twig' %}
+
+{% block page_title %}Product{% endblock %}
+
+{% block main %}
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ product.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ product.title }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ product.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('admin_product_index') }}">back to list</a>
+
+    <a href="{{ path('admin_product_edit', {'id': product.id}) }}">edit</a>
+
+    {{ include('admin/product/_delete_form.html.twig') }}
+
+    {%  if app.request.get('_route') == 'admin_product_show' %}
+        <a class="btn btn-info" href="{{ path('admin_variant_index', {'productId': product.id}) }}">Variants</a>
+    {% else %}
+        {% block variants %}
+        {% endblock %}
+    {% endif %}
+{% endblock %}

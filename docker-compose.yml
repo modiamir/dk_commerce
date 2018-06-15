@@ -1,0 +1,110 @@
+version: "3.1"
+
+services:
+  phpfpm:
+    build: ./docker/phpfpm
+    volumes:
+      - ./:/var/www
+    networks:
+      front:
+        ipv4_address: ${DOCKER_PHPFPM_IP}
+    depends_on:
+      - db
+      - rabbitmq
+      - elasticsearch
+      - memcached
+      - mailhog
+
+  nginx:
+    build: ./docker/nginx
+    volumes:
+      - ./docker/nginx/sites:/etc/nginx/sites-available
+      - ./:/var/www
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    networks:
+      front:
+        ipv4_address:  ${DOCKER_NGINX_IP}
+
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - phpfpm
+
+  db:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DOCKER_DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASS}
+    networks:
+      front:
+        ipv4_address:  ${DOCKER_DB_IP}
+    ports:
+      - 3306:3306
+
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    ports:
+      - 15672:15672
+    networks:
+      front:
+        ipv4_address: ${DOCKER_RABBIT_IP}
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - 8025:8025
+    networks:
+      front:
+        ipv4_address: ${DOCKER_MAILHOG_IP}
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+    environment:
+      - cluster.name=laradock-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      front:
+        ipv4_address: ${DOCKER_ELASTICSEARCH_IP}
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.3.0
+    environment:
+      - XPACK_SECURITY_ENABLED=false
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      front:
+        ipv4_address: ${DOCKER_KIBANA_IP}
+
+  memcached:
+    image: memcached:alpine
+    networks:
+      front:
+        ipv4_address: ${DOCKER_MEMCACHED_IP}
+
+networks:
+    front:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+              - subnet: ${DOCKER_NETWORK_SUBNET}

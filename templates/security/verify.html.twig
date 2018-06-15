@@ -1,0 +1,11 @@
+{% extends 'layout/layout.html.twig' %}
+
+{% block page_title %}
+    Email Verification
+{% endblock %}
+
+{% block main %}
+    {% if verified %}
+    You can now <a href="{{ path('admin_security_login') }}">login</a>
+    {% endif %}
+{% endblock %}

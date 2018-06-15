@@ -1,0 +1,70 @@
+# config/services.yaml
+parameters:
+    in_memory_users:
+        admin:
+            password: admin
+            roles: ['ROLE_ADMIN']
+
+        client:
+            password: client
+            roles: ['ROLE_USER']
+    user_encoders:
+        Symfony\Component\Security\Core\User\User:
+            algorithm: plaintext
+            ignore_case: false
+        Digikala\Entity\User:
+            algorithm: bcrypt
+            cost: 12
+    db_conn:
+        dbname: '%env(DATABASE_NAME)%'
+        user: '%env(DATABASE_USER)%'
+        password: '%env(DATABASE_PASS)%'
+        host: '%env(DATABASE_HOST)%'
+        port: '%env(DATABASE_PORT)%'
+        driver: 'pdo_mysql'
+
+    role_hierarchy:
+        ROLE_ADMIN: ['ROLE_USER']
+
+    smtp_host: '%env(SMTP_HOST)%'
+    smtp_port: '%env(SMTP_PORT)%'
+
+    elasticsearch_host: '%env(ELASTICSEARCH_HOST)%'
+    elasticsearch_port: '%env(ELASTICSEARCH_PORT)%'
+    elastic_index_product_name: product
+    elastic_index_product_config:
+        number_of_shards: 1
+        number_of_replicas: 1
+        analysis:
+            analyzer:
+                default:
+                    type: 'custom'
+                    tokenizer: 'standard'
+                    filter: ['lowercase', 'mySnowball']
+                default_search:
+                    type: 'custom'
+                    tokenizer: 'standard'
+                    filter: ['standard', 'lowercase', 'mySnowball']
+            filter:
+                mySnowball:
+                    type: 'snowball'
+                    language: english
+    elastic_index_product_type_product_properties:
+        id:
+            type: integer
+        title:
+            type: text
+        description:
+            type: text
+        variants:
+            type: nested
+            properties:
+                id:
+                    type: integer
+                color:
+                    type: text
+                price:
+                    type: float
+
+    memcached_host: '%env(MEMCACHED_HOST)%'
+    memcached_port: '%env(MEMCACHED_PORT)%'

@@ -1,0 +1,9 @@
+{% extends 'admin/product/show.html.twig' %}
+
+{% block variants %}
+    {{ include('admin/variant/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('admin_variant_index', {productId: product.id}) }}">back to list</a>
+
+    {{ include('admin/variant/_delete_form.html.twig') }}
+{% endblock %}

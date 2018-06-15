@@ -1,0 +1,35 @@
+{% extends 'layout/admin_layout.html.twig' %}
+
+{% block page_title %}Product index{% endblock %}
+
+{% block main %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.title }}</td>
+                <td>{{ product.description }}</td>
+                <td>
+                    <a href="{{ path('admin_product_show', {'id': product.id}) }}">show</a>
+                    <a href="{{ path('admin_product_edit', {'id': product.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('admin_product_new') }}">Create new</a>
+{% endblock %}

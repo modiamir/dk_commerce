@@ -1,0 +1,92 @@
+random:
+    path:     /frontend/{limit}
+    controller: Digikala\Controller\DefaultController::random
+
+login_check:
+    path:  /frontend/login_check
+    controller: Digikala\Controller\DefaultController::loginCheck
+
+home:
+    path:  /
+    controller: Digikala\Controller\DefaultController::index
+
+security_register:
+    path: /security/register
+    controller: Digikala\Controller\SecurityController:register
+
+security_verify_email:
+    path: /security/verify/{code}
+    controller: Digikala\Controller\SecurityController:verifyEmail
+
+security_login_check:
+    path: /security/login_check
+    controller: Digikala\Controller\SecurityController::loginCheck
+
+security_login:
+    path: /security/login
+    controller: Digikala\Controller\SecurityController::login
+
+security_logout:
+    path: /security/logout
+    controller: Digikala\Controller\SecurityController::logout
+
+admin_security_login_check:
+    path: /admin/security/login_check
+    controller: Digikala\Controller\Admin\SecurityController::loginCheck
+
+admin_security_login:
+    path: /admin/security/login
+    controller: Digikala\Controller\Admin\SecurityController::login
+
+admin_security_logout:
+    path: /admin/security/logout
+    controller: Digikala\Controller\Admin\SecurityController::logout
+
+admin_dashboard_index:
+    path: /admin/dashboard
+    controller: Digikala\Controller\Admin\DashboardController::index
+
+admin_product_index:
+    path: /admin/product
+    controller: Digikala\Controller\Admin\ProductController::index
+    methods: [GET]
+
+admin_product_new:
+    path: /admin/product/new
+    controller: Digikala\Controller\Admin\ProductController::new
+    methods: [GET, POST]
+
+admin_product_show:
+    path: /admin/product/{id}
+    controller: Digikala\Controller\Admin\ProductController::show
+    methods: [GET]
+
+admin_product_edit:
+    path: /admin/product/{id}/edit
+    controller: Digikala\Controller\Admin\ProductController::edit
+    methods: [GET, POST]
+
+admin_product_delete:
+    path: /admin/product/{id}
+    controller: Digikala\Controller\Admin\ProductController::delete
+    methods: [DELETE]
+
+admin_variant_index:
+    path: /admin/product/{productId}/variant
+    controller: Digikala\Controller\Admin\VariantController::index
+    methods: [GET]
+
+admin_variant_new:
+    path: /admin/product/{productId}/variant/new
+    controller: Digikala\Controller\Admin\VariantController::new
+    methods: [GET,POST]
+
+admin_variant_edit:
+    path: /admin/product/{productId}/variant/{id}/edit
+    controller: Digikala\Controller\Admin\VariantController::edit
+    methods: [GET, POST]
+
+admin_variant_delete:
+    path: /admin/product/{productId}/variant/{id}
+    controller: Digikala\Controller\Admin\VariantController::delete
+    methods: [DELETE]
