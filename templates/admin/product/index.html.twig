@@ -3,6 +3,7 @@
 {% block page_title %}Product index{% endblock %}
 
 {% block main %}
+    <a href="{{ path('admin_product_new') }}">Create new</a>
     <table class="table">
         <thead>
             <tr>
@@ -31,5 +32,21 @@
         </tbody>
     </table>
 
-    <a href="{{ path('admin_product_new') }}">Create new</a>
+    <div class="col-lg-12 col-md-12 mb-12">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% set next_page = app.request.query.get('page', 1) + 1 %}
+                {% set prev_page = app.request.query.get('page', 1) - 1 %}
+                {% set max_page = (count/10)|round(0, 'ceil') %}
+
+                {% if prev_page > 0 %}
+                    <li class="page-item"><a class="page-link" href="{{ path('admin_product_index', app.request.query.all|merge({page: prev_page}) ) }}">Previous</a></li>
+                {% endif %}
+
+                {% if next_page <= max_page %}
+                    <li class="page-item"><a class="page-link" href="{{ path('admin_product_index', app.request.query.all|merge({page: next_page}) ) }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 {% endblock %}

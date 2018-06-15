@@ -16,9 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends Controller
 {
-    public function index(ProductRepository $productRepository): Response
+    public function index(Request $request, ProductRepository $productRepository): Response
     {
-        return $this->render('admin/product/index.html.twig', ['products' => $productRepository->findAll()]);
+        $page = $request->query->get('page', 1);
+        return $this->render('admin/product/index.html.twig', [
+            'products' => $productRepository->findBy([], null, 10, ($page - 1) * 10),
+            'count' => $productRepository->count([]),
+        ]);
     }
 
     public function new(Request $request, EntityManagerInterface $em, ProducerInterface $producer): Response
