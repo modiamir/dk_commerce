@@ -11,7 +11,8 @@ docker-compose up -d
 
 docker-compose exec --user www-data phpfpm composer install
 
-sleep 10
-
+sleep 25
+docker-compose exec --user www-data phpfpm bin/digicli enqueue:setup-broker
+docker-compose exec phpfpm supervisorctl restart consumer
 docker-compose exec --user www-data phpfpm vendor/bin/doctrine orm:schema-tool:update --force
 docker-compose exec --user www-data phpfpm bin/digicli digikala:admin:create

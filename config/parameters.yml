@@ -68,3 +68,4 @@ parameters:
 
     memcached_host: '%env(MEMCACHED_HOST)%'
     memcached_port: '%env(MEMCACHED_PORT)%'
+    rabbitmq_dsn: '%env(RABBITMQ_DSN)%'

@@ -20,5 +20,5 @@ tactician:
                 - tactician.commandbus.command.middleware.command_handler
 enqueue:
     transport:
-        default: 'amqp://guest:guest@rabbitmq:5672/'
+        default: '%rabbitmq_dsn%'
     client: ~
