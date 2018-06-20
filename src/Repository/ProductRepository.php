@@ -10,4 +10,15 @@ class ProductRepository extends AbstractServiceRepository
     {
         return Product::class;
     }
+
+    public function findAndRefresh($id)
+    {
+        $product = $this->find($id);
+
+        if ($product instanceof Product) {
+            $this->_em->refresh($product);
+        }
+
+        return $product;
+    }
 }

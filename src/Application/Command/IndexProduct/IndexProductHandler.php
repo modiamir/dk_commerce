@@ -40,7 +40,7 @@ class IndexProductHandler implements CommandHandlerInterface
     public function __invoke(IndexProductCommand $command)
     {
         /** @var \Digikala\Entity\Product $product */
-        $product = $this->productRepository->find($command->getProductId());
+        $product = $this->productRepository->findAndRefresh($command->getProductId());
 
         $document = $this->productTransformer->transform($product);
 
