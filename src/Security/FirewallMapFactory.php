@@ -2,23 +2,13 @@
 
 namespace Digikala\Security;
 
-use Digikala\Kernel;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpKernel\HttpKernel;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager;
-use Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolver;
 use Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolverInterface;
-use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider;
-use Symfony\Component\Security\Core\Authorization\AccessDecisionManager;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
-use Symfony\Component\Security\Core\User\InMemoryUserProvider;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\User\UserChecker;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\Security\Http\FirewallMap;
 use Symfony\Component\Security\Http\Firewall\ExceptionListener;
@@ -28,11 +18,9 @@ use Symfony\Component\Security\Http\Firewall\LogoutListener;
 use Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener;
 use Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener;
 use Symfony\Component\Security\Http\Firewall\AccessListener;
-use Symfony\Component\Security\Http\Firewall;
 use Symfony\Component\Security\Http\AccessMap;
 use Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint;
 use Symfony\Component\Security\Http\Logout\DefaultLogoutSuccessHandler;
-use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy;
 use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessHandler;
 use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationFailureHandler;
 use Symfony\Component\HttpFoundation\RequestMatcher;
@@ -77,7 +65,7 @@ class FirewallMapFactory
     private $accessDecisionManager;
 
     /**
-     * @var \Symfony\Component\Security\Core\User\UserChecker
+     * @var \Digikala\Security\UserChecker
      */
     private $userChecker;
 
@@ -139,6 +127,9 @@ class FirewallMapFactory
             ],
             [
                 'default_target_path' => '/admin/dashboard',
+            ],
+            [
+                'login_path' => '/admin/security/login',
             ]
         );
 
@@ -150,6 +141,7 @@ class FirewallMapFactory
                 '^/security/register' => ['IS_AUTHENTICATED_ANONYMOUSLY'],
                 '^/security/login_check' => ['IS_AUTHENTICATED_ANONYMOUSLY'],
                 '^/security/login' => ['IS_AUTHENTICATED_ANONYMOUSLY'],
+                '^/security/verify' => ['IS_AUTHENTICATED_ANONYMOUSLY'],
                 '^/' => ['ROLE_USER'],
             ],
             [
@@ -163,6 +155,9 @@ class FirewallMapFactory
             ],
             [
                 'default_target_path' => '/',
+            ],
+            [
+                'login_path' => '/security/login',
             ]
         );
 

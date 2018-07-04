@@ -214,7 +214,7 @@ class User implements UserInterface, \Serializable
         return $this->role;
     }
 
-    public function setRole(string $role): self
+    public function setRole(string $role = 'ROLE_USER'): self
     {
         $this->role = $role;
 
@@ -241,7 +241,11 @@ class User implements UserInterface, \Serializable
         $newUser->setEmail($email);
         $newUser->setPassword($password);
         $newUser->setEmailVerificationCode($emailVerificationCode ? $emailVerificationCode : uniqid().md5(uniqid()));
-        $newUser->setRole($role);
+        if ($role) {
+            $newUser->setRole($role);
+        } else {
+            $newUser->setRole('ROLE_USER');
+        }
         $newUser->setCreatedAt($now);
         $newUser->setUpdatedAt($now);
         $newUser->setIsActive($isActive);
@@ -253,6 +257,7 @@ class User implements UserInterface, \Serializable
     public function makeEmailVerified()
     {
         $this->setIsEmailVerified(true);
+        $this->setIsActive(true);
         $this->setUpdatedAt(new \DateTime());
     }
 }

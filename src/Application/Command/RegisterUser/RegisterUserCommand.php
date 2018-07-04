@@ -21,8 +21,8 @@ class RegisterUserCommand
         $email = null,
         $password = null,
         $role = null,
-        $isEmailVerified = null,
-        $isActive = null
+        $isEmailVerified = false,
+        $isActive = false
     ) {
         $this->username = $username;
         $this->email = $email;
