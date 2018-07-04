@@ -6,7 +6,7 @@ services:
         bind:
             $queryBus: '@tactician.commandbus.query'
             $commandBus: '@tactician.commandbus.command'
-            $siteUrl: 'http://test.digikala.local'
+            $siteUrl: '%site_url%'
             $productIndexProductType: '@digikala.index.product.type.product'
             $productIndexProductTypeMapping: '@digikala.index.product.type.product.mapping'
 
